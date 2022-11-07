@@ -29,7 +29,9 @@ export function* authenticateUser(payload: SignInDetails): SagaIterator {
     const action = payload.action === "signIn" ? "in" : "up";
     yield put(
       showToast({
-        title: `Sign ${action} failed: ${error.message}`,
+        title: `Sign ${action} failed: ${
+          error instanceof Error ? error.message : ""
+        }`,
         status: "warning",
       })
     );
@@ -46,7 +48,6 @@ export function* signInFlow(): SagaIterator {
   while (true) {
     const { payload } = yield take(signInRequest.type);
     const signInTask = yield fork(authenticateUser, payload);
-
     // restart loop on cancelSignIn or endSignIn action
     const nextAction = yield take([cancelSignIn.type, endSignIn.type]);
     if (nextAction.type === cancelSignIn.type) yield cancel(signInTask);

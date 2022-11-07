@@ -126,7 +126,12 @@ export function* ticketFlow({
   } catch (error) {
     const ticketAction = yield select(selectors.getTicketAction);
     yield put(
-      showToast(generateErrorToastOptions(error.message, ticketAction))
+      showToast(
+        generateErrorToastOptions(
+          error instanceof Error ? error.message : "",
+          ticketAction
+        )
+      )
     );
 
     yield call(cancelTransaction, holdPayload);
